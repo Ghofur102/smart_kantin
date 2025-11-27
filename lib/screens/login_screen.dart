@@ -97,7 +97,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text(
                         'Selamat datang di zeKantin',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 14, color: Color.fromARGB(255, 0, 0, 0)),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
                       ),
                       const SizedBox(height: 24),
                     ],
@@ -110,15 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   hint: 'Masukkan email Anda',
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Email tidak boleh kosong';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Email tidak valid';
-                    }
-                    return null;
-                  },
                 ),
 
                 // Password Field
@@ -127,15 +121,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   hint: 'Masukkan password Anda',
                   controller: _passwordController,
                   obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password tidak boleh kosong';
-                    }
-                    if (value.length < 6) {
-                      return 'Password minimal 6 karakter';
-                    }
-                    return null;
-                  },
                 ),
 
                 // Login Button

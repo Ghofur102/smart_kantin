@@ -92,15 +92,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   label: 'Nama Lengkap',
                   hint: 'Masukkan nama lengkap Anda',
                   controller: _fullNameController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Nama tidak boleh kosong';
-                    }
-                    if (value.length < 3) {
-                      return 'Nama minimal 3 karakter';
-                    }
-                    return null;
-                  },
                 ),
 
                 // Email Field
@@ -109,15 +100,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   hint: 'Masukkan email Anda',
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Email tidak boleh kosong';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Email tidak valid';
-                    }
-                    return null;
-                  },
                 ),
 
                 // Password Field
@@ -126,15 +108,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   hint: 'Masukkan password Anda',
                   controller: _passwordController,
                   obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password tidak boleh kosong';
-                    }
-                    if (value.length < 6) {
-                      return 'Password minimal 6 karakter';
-                    }
-                    return null;
-                  },
                 ),
 
                 // Confirm Password Field
@@ -143,15 +116,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   hint: 'Masukkan kembali password Anda',
                   controller: _confirmPasswordController,
                   obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Konfirmasi password tidak boleh kosong';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Password tidak cocok';
-                    }
-                    return null;
-                  },
                 ),
 
                 // Register Button

@@ -25,7 +25,7 @@ class ProductCard extends StatelessWidget {
             // Product Image
             Container(
               width: double.infinity,
-              height: 70,
+              height: 150,
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(6),
@@ -39,7 +39,7 @@ class ProductCard extends StatelessWidget {
                     return const Icon(
                       Icons.image_not_supported,
                       color: Colors.grey,
-                      size: 24,
+                      size: 32,
                     );
                   },
                 ),

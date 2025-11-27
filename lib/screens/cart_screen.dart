@@ -42,7 +42,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Keranjang Saya', key: Key('tv_title_huda')),
+        title: const Text('Keranjang Saya', key: Key('huda')),
         centerTitle: true,
         elevation: 0,
       ),

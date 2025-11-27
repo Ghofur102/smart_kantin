@@ -43,7 +43,8 @@ class ProductsModel {
       stock: data['stock'] ?? 0,
       imageUrl: data['imageUrl'] ?? '',
       category: Category.values.firstWhere(
-        (e) => e.name == data['category'], orElse: () => Category.makanan,
+        (e) => e.name == data['category'],
+        orElse: () => Category.makanan,
       ),
     );
   }
@@ -56,7 +57,7 @@ class ProductsModel {
 
     final snapshot = await products.limit(1).get();
 
-    if(snapshot.docs.isNotEmpty) {
+    if (snapshot.docs.isNotEmpty) {
       return;
     }
 
@@ -66,7 +67,7 @@ class ProductsModel {
         name: "mie ayam",
         price: 12000,
         stock: 100,
-        imageUrl: "gambarmieayam.png",
+        imageUrl: "assets/images/mie ayam.png",
         category: Category.makanan,
       ),
       ProductsModel(
@@ -74,7 +75,7 @@ class ProductsModel {
         name: "mie nyemek",
         price: 10000,
         stock: 100,
-        imageUrl: "mienyemek.png",
+        imageUrl: "assets/images/mie nyemek.png",
         category: Category.makanan,
       ),
       ProductsModel(
@@ -82,7 +83,7 @@ class ProductsModel {
         name: "mie kuah",
         price: 8000,
         stock: 100,
-        imageUrl: "gambarmiekuah.png",
+        imageUrl: "assets/images/mie kuah.png",
         category: Category.makanan,
       ),
       ProductsModel(
@@ -90,7 +91,7 @@ class ProductsModel {
         name: "mie goreng",
         price: 8000,
         stock: 100,
-        imageUrl: "gambarmiegoreng.png",
+        imageUrl: "assets/images/mie goreng.png",
         category: Category.makanan,
       ),
       ProductsModel(
@@ -98,7 +99,7 @@ class ProductsModel {
         name: "es teh",
         price: 3000,
         stock: 100,
-        imageUrl: "gambaresteh.png",
+        imageUrl: "assets/images/es teh.png",
         category: Category.minuman,
       ),
       ProductsModel(
@@ -106,7 +107,7 @@ class ProductsModel {
         name: "es jeruk",
         price: 12000,
         stock: 100,
-        imageUrl: "gambahesjeruk.png",
+        imageUrl: "assets/images/es jeruk.png",
         category: Category.minuman,
       ),
       ProductsModel(
@@ -114,7 +115,7 @@ class ProductsModel {
         name: "es marimas",
         price: 2000,
         stock: 100,
-        imageUrl: "gambaresmarimas.png",
+        imageUrl: "assets/images/es marimas.png",
         category: Category.minuman,
       ),
       ProductsModel(
@@ -122,7 +123,7 @@ class ProductsModel {
         name: "pop ice",
         price: 5000,
         stock: 100,
-        imageUrl: "gambarpopice.png",
+        imageUrl: "assets/images/pop ice.png",
         category: Category.minuman,
       ),
       ProductsModel(
@@ -130,7 +131,7 @@ class ProductsModel {
         name: "nasi goreng",
         price: 12000,
         stock: 100,
-        imageUrl: "gambarnasigoreng.png",
+        imageUrl: "assets/images/nasi goreng.jpg",
         category: Category.makanan,
       ),
       ProductsModel(
@@ -138,16 +139,17 @@ class ProductsModel {
         name: "ayam goreng",
         price: 12000,
         stock: 100,
-        imageUrl: "gambarayamgoreng.png",
+        imageUrl: "assets/images/ayam goreng.png",
         category: Category.makanan,
       ),
     ];
     for (var product in dummyProducts) {
-      await products.add(product.toMap()); // firebase hanya mengerti data map makanya dikonversi pakai toMap() 
+      await products.add(
+        product.toMap(),
+      ); // firebase hanya mengerti data map makanya dikonversi pakai toMap()
       print("✅ Berhasil terkirim!");
     }
   }
-
 }
 
 class CartItem {

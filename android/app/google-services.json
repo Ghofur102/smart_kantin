@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "462552178620",
+    "project_id": "livenotes-4e6c4",
+    "storage_bucket": "livenotes-4e6c4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:462552178620:android:dadca8c4ae7bb78ae055b9",
+        "android_client_info": {
+          "package_name": "com.example.live_notes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFPA_TLihSPV2l-Pco571rETEChw4Q2Go"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:462552178620:android:27693e3602699e76e055b9",
+        "android_client_info": {
+          "package_name": "com.example.smart_kantin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFPA_TLihSPV2l-Pco571rETEChw4Q2Go"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:462552178620:android:7c776eea455f6871e055b9",
+        "android_client_info": {
+          "package_name": "com.example.uas_praktikum"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFPA_TLihSPV2l-Pco571rETEChw4Q2Go"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

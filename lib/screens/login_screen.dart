@@ -10,7 +10,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
@@ -23,10 +22,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
     setState(() {
       _isLoading = true;
     });
@@ -65,93 +60,90 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 60),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 60),
 
-                // Logo + Title (centered)
-                Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircleAvatar(
-                        radius: 150, // atur radius
-                        backgroundImage: AssetImage(
-                          'assets/images/logo zeKantin.png',
-                        ),
-                        backgroundColor: Colors.transparent,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Masuk Akun',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Selamat datang di zeKantin',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-
-                // Email Field
-                CustomTextField(
-                  label: 'Email',
-                  hint: 'Masukkan email Anda',
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-
-                // Password Field
-                CustomTextField(
-                  label: 'Password',
-                  hint: 'Masukkan password Anda',
-                  controller: _passwordController,
-                  obscureText: true,
-                ),
-
-                // Login Button
-                CustomButton(
-                  label: 'Masuk',
-                  isLoading: _isLoading,
-                  onPressed: _handleLogin,
-                ),
-                const SizedBox(height: 16),
-
-                // Register Link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              // Logo + Title (centered)
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text("Belum punya akun? "),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/register');
-                      },
-                      child: const Text(
-                        'Daftar di sini',
-                        style: TextStyle(
-                          color: Color(0xFF2E79DB),
-                          fontWeight: FontWeight.bold,
-                        ),
+                    CircleAvatar(
+                      radius: 150, // atur radius
+                      backgroundImage: AssetImage(
+                        'assets/images/logo zeKantin.png',
+                      ),
+                      backgroundColor: Colors.transparent,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Masuk Akun',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Selamat datang di zeKantin',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                   ],
                 ),
-              ],
-            ),
+              ),
+
+              // Email Field
+              CustomTextField(
+                label: 'Email',
+                hint: 'Masukkan email Anda',
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+              ),
+
+              // Password Field
+              CustomTextField(
+                label: 'Password',
+                hint: 'Masukkan password Anda',
+                controller: _passwordController,
+                obscureText: true,
+              ),
+
+              // Login Button
+              CustomButton(
+                label: 'Masuk',
+                isLoading: _isLoading,
+                onPressed: _handleLogin,
+              ),
+              const SizedBox(height: 16),
+
+              // Register Link
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Belum punya akun? "),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: const Text(
+                      'Daftar di sini',
+                      style: TextStyle(
+                        color: Color(0xFF2E79DB),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

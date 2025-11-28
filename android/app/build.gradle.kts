@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    // (version is specified at the root via settings.gradle.kts) - DO NOT re-declare with version here
     // START: FlutterFire Configuration
     id("com.google.gms.google-services")
     // END: FlutterFire Configuration

@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDFPA_TLihSPV2l-Pco571rETEChw4Q2Go',
-    appId: '1:462552178620:android:27693e3602699e76e055b9',
-    messagingSenderId: '462552178620',
-    projectId: 'livenotes-4e6c4',
-    storageBucket: 'livenotes-4e6c4.firebasestorage.app',
+    apiKey: 'AIzaSyBBUuBNe-TmIf7E-TRE8p3LrJ8SvI-SAag',
+    appId: '1:416371801090:android:e7f0a4b0c6996dcb78bb1b',
+    messagingSenderId: '416371801090',
+    projectId: 'smartkantin-594dc',
+    storageBucket: 'smartkantin-594dc.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCUVhUE6xK0e0-1t09dXIyOtpQowLC4GWo',
-    appId: '1:462552178620:ios:a47403a3f3c85c68e055b9',
-    messagingSenderId: '462552178620',
-    projectId: 'livenotes-4e6c4',
-    storageBucket: 'livenotes-4e6c4.firebasestorage.app',
+    apiKey: 'AIzaSyCRJYbysFf0wUH7Ureh2Y8-7HlocCJLJik',
+    appId: '1:416371801090:ios:f5cbfb2e5acb223978bb1b',
+    messagingSenderId: '416371801090',
+    projectId: 'smartkantin-594dc',
+    storageBucket: 'smartkantin-594dc.firebasestorage.app',
     iosBundleId: 'com.example.smartKantin',
   );
+
 }

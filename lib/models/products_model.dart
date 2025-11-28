@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 enum Category { makanan, minuman }
 
@@ -50,7 +51,8 @@ class ProductsModel {
   }
 
   static Future<void> seederProducts() async {
-    print("🔥🔥🔥 [START] MEMULAI FUNGSI SEEDER 🔥🔥🔥");
+    // Use debugPrint instead of print for better control in production/dev
+    debugPrint("🔥🔥🔥 [START] MEMULAI FUNGSI SEEDER 🔥🔥🔥");
     final CollectionReference products = FirebaseFirestore.instance.collection(
       'products',
     );
@@ -147,7 +149,7 @@ class ProductsModel {
       await products.add(
         product.toMap(),
       ); // firebase hanya mengerti data map makanya dikonversi pakai toMap()
-      print("✅ Berhasil terkirim!");
+      debugPrint("✅ Berhasil terkirim: ${product.name}");
     }
   }
 }

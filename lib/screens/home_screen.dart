@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smart_kantin/services/auth_service.dart';
 import '../models/products_model.dart';
 import '../widgets/product_card.dart';
 
@@ -14,7 +15,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final CollectionReference _products =
       FirebaseFirestore.instance.collection('products');
 
+<<<<<<< Updated upstream
   List<CartItem> _cartItems = [];
+=======
+  final List<ProductsModel> _cartItems = [];
+>>>>>>> Stashed changes
   String _selectedCategory = 'semua';
 
   void _addToCart(ProductsModel product) {
@@ -86,8 +91,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () => Navigator.pushNamed(context, '/profile'),
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
+            onPressed: () async {
+              await AuthService.instance.signOut();
+              if (!context.mounted) return;
               Navigator.pushReplacementNamed(context, '/login');
             },
           ),
@@ -173,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         backgroundColor: Colors.transparent,
-        selectedColor: const Color(0xFF2E79DB).withOpacity(0.2),
+        selectedColor: const Color(0x332E79DB),
         side: BorderSide(
           color: isSelected ? const Color(0xFF2E79DB) : Colors.grey,
         ),

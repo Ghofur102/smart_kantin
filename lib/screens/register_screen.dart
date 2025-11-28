@@ -80,14 +80,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 30),
 
-              // Full Name Field
+              // UserID (NIM)
+              CustomTextField(
+                label: 'UserID (NIM)',
+                hint: 'Masukkan NIM ',
+                controller:
+                    TextEditingController(), // tambahkan controller jika ingin simpan ke Firebase
+              ),
+
+              // Full Name 
               CustomTextField(
                 label: 'Nama Lengkap',
                 hint: 'Masukkan nama lengkap Anda',
                 controller: _fullNameController,
               ),
 
-              // Email Field
+              // Email 
               CustomTextField(
                 label: 'Email',
                 hint: 'Masukkan email Anda',
@@ -95,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 keyboardType: TextInputType.emailAddress,
               ),
 
-              // Password Field
+              // Password
               CustomTextField(
                 label: 'Password',
                 hint: 'Masukkan password Anda',
@@ -103,7 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 obscureText: true,
               ),
 
-              // Confirm Password Field
+              // Confirm Password 
               CustomTextField(
                 label: 'Konfirmasi Password',
                 hint: 'Masukkan kembali password Anda',

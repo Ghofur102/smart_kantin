@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushNamed(context, '/register');
                     },
                     child: const Text(
-                      'Daftar di sini',
+                      'Register',
                       style: TextStyle(
                         color: Color(0xFF2E79DB),
                         fontWeight: FontWeight.bold,

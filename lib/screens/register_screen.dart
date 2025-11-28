@@ -60,6 +60,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Daftar Akun'), centerTitle: true),
+
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -85,7 +87,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 label: 'UserID (NIM)',
                 hint: 'Masukkan NIM ',
                 controller:
-                    TextEditingController(), // tambahkan controller jika ingin simpan ke Firebase
+                    TextEditingController(), 
               ),
 
               // Full Name 
@@ -137,7 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Navigator.pop(context);
                     },
                     child: const Text(
-                      'Masuk di sini',
+                      'Masuk',
                       style: TextStyle(
                         color: Color(0xFF2E79DB),
                         fontWeight: FontWeight.bold,

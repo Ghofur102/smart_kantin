@@ -15,11 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final CollectionReference _products =
       FirebaseFirestore.instance.collection('products');
 
-<<<<<<< Updated upstream
-  List<CartItem> _cartItems = [];
-=======
-  final List<ProductsModel> _cartItems = [];
->>>>>>> Stashed changes
+  final List<CartItem> _cartItems = [];
   String _selectedCategory = 'semua';
 
   void _addToCart(ProductsModel product) {

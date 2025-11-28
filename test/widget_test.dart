@@ -11,20 +11,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:smart_kantin/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Shows login screen and navigation to register', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify login screen content
+    expect(find.text('Masuk Akun'), findsOneWidget);
+    expect(find.byType(TextFormField), findsNWidgets(2));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that the register link exists
+    expect(find.text('Daftar di sini'), findsOneWidget);
   });
 }

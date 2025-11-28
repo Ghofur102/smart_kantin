@@ -11,37 +11,31 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final CollectionReference _products = FirebaseFirestore.instance.collection(
-    'products',
-  );
+  final CollectionReference _products =
+      FirebaseFirestore.instance.collection('products');
 
-  List<ProductsModel> _cartItems = [];
+  List<CartItem> _cartItems = [];
   String _selectedCategory = 'semua';
 
   void _addToCart(ProductsModel product) {
     setState(() {
-      final existingIndex = _cartItems.indexWhere(
-        (item) => item.productId == product.productId,
+      final index = _cartItems.indexWhere(
+        (item) => item.product.productId == product.productId,
       );
 
-      if (existingIndex == -1) {
-        _cartItems.add(product);
+      if (index == -1) {
+        _cartItems.add(
+          CartItem(product: product, quantity: 1),
+        );
       } else {
-        if (_cartItems[existingIndex].stock > 0) {
-          _cartItems[existingIndex] = ProductsModel(
-            productId: _cartItems[existingIndex].productId,
-            name: _cartItems[existingIndex].name,
-            price: _cartItems[existingIndex].price,
-            stock: _cartItems[existingIndex].stock + 1,
-            imageUrl: _cartItems[existingIndex].imageUrl,
-            category: _cartItems[existingIndex].category,
-          );
-        }
+        _cartItems[index].quantity++;
       }
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${product.name} ditambahkan ke keranjang')),
+      SnackBar(
+        content: Text('${product.name} ditambahkan ke keranjang'),
+      ),
     );
   }
 
@@ -57,7 +51,11 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/cart', arguments: _cartItems);
+                  Navigator.pushNamed(
+                    context,
+                    '/cart',
+                    arguments: _cartItems,
+                  );
                 },
               ),
               if (_cartItems.isNotEmpty)
@@ -97,7 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          // Category Filter
           SizedBox(
             height: 50,
             child: ListView(
@@ -110,8 +107,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-
-          // Products Grid
           Expanded(
             child: StreamBuilder(
               stream: _products.snapshots(),
@@ -126,13 +121,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 List<DocumentSnapshot> docs = snapshot.data!.docs;
 
-                // Filter by category
                 if (_selectedCategory != 'semua') {
                   docs = docs
                       .where(
-                        (doc) =>
-                            doc['category'].toString().toLowerCase() ==
-                            _selectedCategory,
+                        (doc) => doc['category']
+                            .toString()
+                            .toLowerCase()
+                            .contains(_selectedCategory),
                       )
                       .toList();
                 }
@@ -149,8 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final DocumentSnapshot document = docs[index];
                     final product = ProductsModel.fromSnapshot(
-                      document as DocumentSnapshot<Map<String, dynamic>>,
-                    );
+                        document as DocumentSnapshot<Map<String, dynamic>>);
 
                     return ProductCard(
                       product: product,

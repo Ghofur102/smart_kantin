@@ -18,18 +18,14 @@ class ProductCard extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Product Image
-            Container(
+            SizedBox(
               width: double.infinity,
-              height: 150,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(6),
-              ),
+              height: 135,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(6),
                 child: Image.asset(
@@ -45,23 +41,28 @@ class ProductCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
 
             // Product Name
-            Text(
-              product.name,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            Flexible(
+              child: Text(
+                product.name,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
 
             // Category
             Text(
               product.category.name,
               style: const TextStyle(fontSize: 10, color: Colors.grey),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
 
             // Price
             Text(
@@ -72,14 +73,14 @@ class ProductCard extends StatelessWidget {
                 color: AppColors.primary,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
 
             // Stock Info
             Text(
               'Stok: ${product.stock}',
               style: const TextStyle(fontSize: 9, color: Colors.grey),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
 
             // Add to Cart Button
             SizedBox(

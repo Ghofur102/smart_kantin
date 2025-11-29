@@ -16,6 +16,7 @@ class AuthService {
     required String fullName,
     required String email,
     required String password,
+    String? nim,
   }) async {
     try {
       final cred = await _auth.createUserWithEmailAndPassword(
@@ -30,7 +31,7 @@ class AuthService {
         userId: uid,
         email: email,
         fullName: fullName,
-        password: password,
+        nim: nim,
       );
 
       await _firestore.collection('users').doc(uid).set(user.toMap());

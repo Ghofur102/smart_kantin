@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smart_kantin/services/auth_service.dart';
+
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
-import 'package:smart_kantin/services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,6 +14,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _fullNameController = TextEditingController();
+  final _nimController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -20,6 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void dispose() {
     _fullNameController.dispose();
+    _nimController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -27,50 +31,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _handleRegister() async {
-    final fullName = _fullNameController.text.trim();
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-    final confirm = _confirmPasswordController.text.trim();
-
-    if (fullName.isEmpty || email.isEmpty || password.isEmpty || confirm.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Semua bidang harus diisi')));
-      return;
-    }
-
-    final emailRegex = RegExp(r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}");
-    if (!emailRegex.hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Format email tidak valid')));
-      return;
-    }
-
-    if (password.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password minimal 6 karakter')));
-      return;
-    }
-
-    if (password != confirm) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password dan konfirmasi tidak cocok')));
-      return;
-    }
-
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
-      final uid = await AuthService.instance.register(fullName: fullName, email: email, password: password);
-      if (uid == null) throw Exception('Gagal mendaftar');
+      // Basic validation
+      final nim = _nimController.text.trim();
+      final fullName = _fullNameController.text.trim();
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+      final confirmPassword = _confirmPasswordController.text;
+
+      if (nim.isEmpty || fullName.isEmpty || email.isEmpty || password.isEmpty) {
+        throw Exception('Semua field wajib diisi.');
+      }
+      if (password != confirmPassword) {
+        throw Exception('Password dan konfirmasi password tidak cocok.');
+      }
+
+      // Use AuthService to register and save profile
+      final uid = await AuthService.instance.register(
+        fullName: fullName,
+        email: email,
+        password: password,
+        nim: nim,
+      );
+
+      if (uid == null) throw Exception('Gagal membuat akun.');
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pendaftaran berhasil!')));
-      Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pendaftaran berhasil!')),
+      );
+
+      if (mounted) Navigator.pop(context);
     } catch (e) {
-      final err = e.toString();
-      if (err.contains('CONFIGURATION_NOT_FOUND') || err.contains('RecaptchaAction')) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Konfigurasi Firebase Web belum diatur: jalankan `flutterfire configure` atau jalankan di emulator / device Android/iOS')));
+      String message = 'Gagal mendaftar: ';
+      if (e is FirebaseAuthException) {
+        message += e.message ?? e.code;
       } else {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal mendaftar: $err')));
+        message += e.toString();
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -98,14 +112,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 30),
 
-              // Full Name Field
+              // UserID (NIM)
+              CustomTextField(
+                label: 'UserID (NIM)',
+                hint: 'Masukkan NIM ',
+                controller: _nimController,
+              ),
+
+              // Full Name 
               CustomTextField(
                 label: 'Nama Lengkap',
                 hint: 'Masukkan nama lengkap Anda',
                 controller: _fullNameController,
               ),
 
-              // Email Field
+              // Email 
               CustomTextField(
                 label: 'Email',
                 hint: 'Masukkan email Anda',
@@ -113,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 keyboardType: TextInputType.emailAddress,
               ),
 
-              // Password Field
+              // Password
               CustomTextField(
                 label: 'Password',
                 hint: 'Masukkan password Anda',
@@ -121,7 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 obscureText: true,
               ),
 
-              // Confirm Password Field
+              // Confirm Password 
               CustomTextField(
                 label: 'Konfirmasi Password',
                 hint: 'Masukkan kembali password Anda',

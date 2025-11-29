@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "416371801090",
-    "project_id": "smartkantin-594dc",
-    "storage_bucket": "smartkantin-594dc.firebasestorage.app"
+    "project_number": "855314956282",
+    "project_id": "zekantin",
+    "storage_bucket": "zekantin.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:416371801090:android:e7f0a4b0c6996dcb78bb1b",
+        "mobilesdk_app_id": "1:855314956282:android:72c57f11d2fe1c5b8eee43",
         "android_client_info": {
           "package_name": "com.example.smart_kantin"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBBUuBNe-TmIf7E-TRE8p3LrJ8SvI-SAag"
+          "current_key": "AIzaSyBGc-lKWSBc7ufsUj67Iy5YC5NB8kWRTtQ"
         }
       ],
       "services": {

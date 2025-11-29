@@ -61,7 +61,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Daftar Akun'), centerTitle: true),
 
-
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -86,18 +85,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               CustomTextField(
                 label: 'UserID (NIM)',
                 hint: 'Masukkan NIM ',
-                controller:
-                    TextEditingController(), 
+                controller: TextEditingController(),
               ),
 
-              // Full Name 
+              // Full Name
               CustomTextField(
                 label: 'Nama Lengkap',
                 hint: 'Masukkan nama lengkap Anda',
                 controller: _fullNameController,
               ),
 
-              // Email 
+              // Email
               CustomTextField(
                 label: 'Email',
                 hint: 'Masukkan email Anda',
@@ -113,7 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 obscureText: true,
               ),
 
-              // Confirm Password 
+              // Confirm Password
               CustomTextField(
                 label: 'Konfirmasi Password',
                 hint: 'Masukkan kembali password Anda',

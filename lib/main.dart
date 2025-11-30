@@ -20,16 +20,9 @@ void main() async {
     AuthService.instance.init();
     firebaseInitialized = true;
   } catch (e) {
-    // Provide a clearer message when Firebase isn't configured for the current platform
-    // For example, running the app on Flutter web without a web configuration can cause
-    // recaptcha / auth configuration errors. Run `flutterfire configure` to add the web
-    // configuration options.
-    // Print to console and keep app running to allow debugging screens to show.
-    // In production, consider failing fast or showing a friendly UI message.
-    // Re-throw the error if you prefer the app to crash during development.
-    // debugPrint prints to console so developer can see error in logs.
     debugPrint('Error initializing Firebase: $e');
   }
+  
   String? uid;
   if (firebaseInitialized) {
     // menambahkan product seeder
@@ -38,7 +31,7 @@ void main() async {
     } catch (e) {
       debugPrint('Error running seeder: $e');
     }
-
+  
     // cek session user saat aplikasi dibuka
     try {
       uid = await AuthService.instance.getLoggedInUserId();
@@ -47,7 +40,6 @@ void main() async {
       uid = null;
     }
   }
-
   runApp(MyApp(initialUid: uid));
 }
 

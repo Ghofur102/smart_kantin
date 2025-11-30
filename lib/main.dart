@@ -13,33 +13,24 @@ import 'package:smart_kantin/themes/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Inisialisasi koneksi ke Firebase
-  bool firebaseInitialized = false;
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    // initialize auth service listeners
-    AuthService.instance.init();
-    firebaseInitialized = true;
   } catch (e) {
+    // Provide a clearer message when Firebase isn't configured for the current platform
+    // For example, running the app on Flutter web without a web configuration can cause
+    // recaptcha / auth configuration errors. Run `flutterfire configure` to add the web
+    // configuration options.
+    // Print to console and keep app running to allow debugging screens to show.
+    // In production, consider failing fast or showing a friendly UI message.
+    // Re-throw the error if you prefer the app to crash during development.
+    // debugPrint prints to console so developer can see error in logs.
     debugPrint('Error initializing Firebase: $e');
   }
-  
-  String? uid;
-  if (firebaseInitialized) {
-    // menambahkan product seeder
-    try {
-      await ProductsModel.seederProducts();
-    } catch (e) {
-      debugPrint('Error running seeder: $e');
-    }
-  
-    // cek session user saat aplikasi dibuka
-    try {
-      uid = await AuthService.instance.getLoggedInUserId();
-    } catch (e) {
-      debugPrint('Error retrieving user session: $e');
-      uid = null;
-    }
-  }
+  // menambahkan product seeder
+  await ProductsModel.seederProducts();
+
+  // cek session user saat aplikasi dibuka
+  final uid = await AuthService.instance.getLoggedInUserId();
   runApp(MyApp(initialUid: uid));
 }
 
@@ -53,21 +44,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Smart Kantin',
       theme: AppTheme.lightTheme(),
-      home: StreamBuilder(
-        stream: AuthService.instance.userStream,
-        builder: (context, snapshot) {
-          // if stream not yet connected, use initialUid as fallback
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return initialUid == null ? const LoginScreen() : const HomeScreen();
-          }
-
-          if (snapshot.hasData && snapshot.data != null) {
-            return const HomeScreen();
-          }
-
-          return const LoginScreen();
-        },
-      ),
+      home: initialUid == null ? const LoginScreen() : const HomeScreen(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),

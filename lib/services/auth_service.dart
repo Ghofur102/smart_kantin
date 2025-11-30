@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,13 +7,8 @@ class AuthService {
   AuthService._privateConstructor();
   static final AuthService instance = AuthService._privateConstructor();
 
-  late final fb.FirebaseAuth _auth;
-  late final FirebaseFirestore _firestore;
-  bool _isInit = false;
-  final StreamController<UsersModel?> _userController = StreamController.broadcast();
-
-  Stream<UsersModel?> get userStream => _userController.stream;
-  UsersModel? _currentUser;
+  final fb.FirebaseAuth _auth = fb.FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static const _kUserIdKey = 'logged_in_user_id';
 
@@ -23,8 +16,8 @@ class AuthService {
     required String fullName,
     required String email,
     required String password,
+    String? nim,
   }) async {
-    await _ensureInitialized();
     try {
       final cred = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -38,7 +31,7 @@ class AuthService {
         userId: uid,
         email: email,
         fullName: fullName,
-        password: password,
+        nim: nim,
       );
 
       await _firestore.collection('users').doc(uid).set(user.toMap());
@@ -50,7 +43,6 @@ class AuthService {
   }
 
   Future<String?> login({required String email, required String password}) async {
-    await _ensureInitialized();
     try {
       final cred = await _auth.signInWithEmailAndPassword(email: email, password: password);
       final uid = cred.user?.uid;
@@ -68,16 +60,12 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-    await _ensureInitialized();
     await _auth.signOut();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kUserIdKey);
-    _currentUser = null;
-    _userController.add(null);
   }
 
   Future<UsersModel?> fetchCurrentUserModel() async {
-    await _ensureInitialized();
     final uid = await getLoggedInUserId();
     if (uid == null) return null;
     final doc = await _firestore.collection('users').doc(uid).get();
@@ -88,14 +76,6 @@ class AuthService {
   Future<void> _saveSession(String uid) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_kUserIdKey, uid);
-    // update current user and notify listeners
-    try {
-      final userModel = await fetchCurrentUserModel();
-      _currentUser = userModel;
-      _userController.add(_currentUser);
-    } catch (_) {
-      _userController.add(null);
-    }
   }
 
   Future<String?> getLoggedInUserId() async {
@@ -104,40 +84,7 @@ class AuthService {
     if (uid != null) return uid;
 
     // fallback to firebase current user
-    await _ensureInitialized();
     final fb.User? firebaseUser = _auth.currentUser;
     return firebaseUser?.uid;
-  }
-
-  Future<void> _ensureInitialized() async {
-    if (!_isInit) {
-      init();
-    }
-  }
-
-  // Initialize the auth listener that syncs firebase auth changes to app session
-  void init() {
-    if (_isInit) return;
-    _isInit = true;
-    // initialize instances
-    _auth = fb.FirebaseAuth.instance;
-    _firestore = FirebaseFirestore.instance;
-
-    // listen to Firebase Auth state changes
-    _auth.authStateChanges().listen((fb.User? fbUser) async {
-      if (fbUser == null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove(_kUserIdKey);
-        _currentUser = null;
-        _userController.add(null);
-      } else {
-        // save uid in prefs and fetch user model
-        await _saveSession(fbUser.uid);
-      }
-    });
-  }
-
-  void dispose() {
-    _userController.close();
   }
 }

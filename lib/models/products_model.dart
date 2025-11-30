@@ -162,3 +162,42 @@ class CartItem {
 
   double get totalPrice => product.price * quantity;
 }
+
+/// Jalankan transaksi Firestore untuk mengurangi stok produk saat checkout.
+/// Nama fungsi diakhiri dengan inisial sesuai aturan tugas.
+Future<void> checkoutAndReduceStock_zami(List<CartItem> items) async {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final CollectionReference products = firestore.collection('products');
+
+  await firestore.runTransaction((transaction) async {
+    // First, perform ALL reads for the transaction
+    final List<Map<String, dynamic>> updates = [];
+
+    for (final item in items) {
+      final docRef = products.doc(item.product.productId);
+      final snapshot = await transaction.get(docRef);
+
+      if (!snapshot.exists) {
+        throw Exception('Produk tidak ditemukan: ${item.product.name}');
+      }
+
+      final data = snapshot.data() as Map<String, dynamic>;
+      final int stock = (data['stock'] ?? 0) as int;
+      final int requested = item.quantity.toInt();
+
+      if (stock < requested) {
+        throw Exception('Stok tidak cukup untuk ${item.product.name}');
+      }
+
+      final int newStock = stock - requested;
+      updates.add({'docRef': docRef, 'newStock': newStock});
+    }
+
+    // Then perform all writes
+    for (final u in updates) {
+      final docRef = u['docRef'] as DocumentReference;
+      final newStock = u['newStock'] as int;
+      transaction.update(docRef, {'stock': newStock});
+    }
+  });
+}

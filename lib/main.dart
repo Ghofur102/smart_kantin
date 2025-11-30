@@ -27,7 +27,7 @@ void main() async {
     debugPrint('Error initializing Firebase: $e');
   }
   // menambahkan product seeder
-  await ProductsModel.seederProducts();
+  await ProductsModel.seederProducts_ghofur();
 
   // cek session user saat aplikasi dibuka
   final uid = await AuthService.instance.getLoggedInUserId();

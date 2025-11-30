@@ -22,7 +22,7 @@ class TransactionsModel {
   });
 
   // konversi dari object dart ke map untuk dikirim ke firebase
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap_ghofur() {
     return {
       'userId': userId,
       'totalFinal': totalFinal,
@@ -33,14 +33,14 @@ class TransactionsModel {
 
   // konversi dari map ke object dart untuk ditampilkan di flutter dari firebase
   factory TransactionsModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data()!;
+    final data_ghofur = doc.data()!;
 
     return TransactionsModel(
       trxId: doc.id, 
-      userId: data['userId'] ?? '', 
-      totalFinal: data['totalFinal'] ?? '', 
-      status: data['status'] ?? '',
-      items: data['items'] ?? '',
+      userId: data_ghofur['userId'] ?? '', 
+      totalFinal: data_ghofur['totalFinal'] ?? '', 
+      status: data_ghofur['status'] ?? '',
+      items: data_ghofur['items'] ?? '',
     );
   }
   

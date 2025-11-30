@@ -34,7 +34,7 @@ class AuthService {
         nim: nim,
       );
 
-      await _firestore.collection('users').doc(uid).set(user.toMap());
+      await _firestore.collection('users').doc(uid).set(user.toMap_ghofur());
       await _saveSession(uid);
       return uid;
     } on fb.FirebaseAuthException catch (e) {

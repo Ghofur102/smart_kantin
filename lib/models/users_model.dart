@@ -14,7 +14,7 @@ class UsersModel {
   });
 
   // konversi dari object dart ke map untuk dikirim ke firebase
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap_ghofur() {
     return {
       'userId': userId,
       'email': email,
@@ -25,13 +25,13 @@ class UsersModel {
 
   // konversi dari map ke object dart untuk ditampilkan di flutter dari firebase
   factory UsersModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data()!;
+    final data_ghofur = doc.data()!;
 
     return UsersModel(
-      userId: data['userId'] ?? doc.id,
-      email: data['email'] ?? '',
-      fullName: data['fullName'] ?? '',
-      nim: data['nim'] ?? null,
+      userId: data_ghofur['userId'] ?? doc.id,
+      email: data_ghofur['email'] ?? '',
+      fullName: data_ghofur['fullName'] ?? '',
+      nim: data_ghofur['nim'] ?? null,
     );
   }
 }

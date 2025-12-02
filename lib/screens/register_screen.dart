@@ -10,24 +10,27 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _fullNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _isLoading = false;
+  // tf = TextField
+  final _tfNimControllerhuda = TextEditingController();
+  final _tfFullNameControllerhuda = TextEditingController();
+  final _tfEmailControllerhuda = TextEditingController();
+  final _tfPasswordControllerhuda = TextEditingController();
+  final _tfConfirmPasswordControllerhuda = TextEditingController();
+  bool _isLoadingButtonhuda = false;
 
   @override
   void dispose() {
-    _fullNameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    _tfNimControllerhuda.dispose();
+    _tfFullNameControllerhuda.dispose();
+    _tfEmailControllerhuda.dispose();
+    _tfPasswordControllerhuda.dispose();
+    _tfConfirmPasswordControllerhuda.dispose();
     super.dispose();
   }
 
-  Future<void> _handleRegister() async {
+  Future<void> _handleRegisterButtonhuda() async {
     setState(() {
-      _isLoading = true;
+      _isLoadingButtonhuda = true;
     });
 
     try {
@@ -41,16 +44,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (mounted) {
         Navigator.pop(context);
       }
-    } catch (e) {
+    } catch (ehuda) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Gagal mendaftar: $e')));
+        ).showSnackBar(SnackBar(content: Text('Gagal mendaftar: $ehuda')));
       }
     } finally {
       if (mounted) {
         setState(() {
-          _isLoading = false;
+          _isLoadingButtonhuda = false;
         });
       }
     }
@@ -85,21 +88,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
               CustomTextField(
                 label: 'UserID (NIM)',
                 hint: 'Masukkan NIM ',
-                controller: TextEditingController(),
+                controller: _tfNimControllerhuda,
               ),
 
               // Full Name
               CustomTextField(
                 label: 'Nama Lengkap',
                 hint: 'Masukkan nama lengkap Anda',
-                controller: _fullNameController,
+                controller: _tfFullNameControllerhuda,
               ),
 
               // Email
               CustomTextField(
                 label: 'Email',
                 hint: 'Masukkan email Anda',
-                controller: _emailController,
+                controller: _tfEmailControllerhuda,
                 keyboardType: TextInputType.emailAddress,
               ),
 
@@ -107,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               CustomTextField(
                 label: 'Password',
                 hint: 'Masukkan password Anda',
-                controller: _passwordController,
+                controller: _tfPasswordControllerhuda,
                 obscureText: true,
               ),
 
@@ -115,15 +118,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               CustomTextField(
                 label: 'Konfirmasi Password',
                 hint: 'Masukkan kembali password Anda',
-                controller: _confirmPasswordController,
+                controller: _tfConfirmPasswordControllerhuda,
                 obscureText: true,
               ),
 
               // Register Button
               CustomButton(
                 label: 'Daftar',
-                isLoading: _isLoading,
-                onPressed: _handleRegister,
+                isLoading: _isLoadingButtonhuda,
+                onPressed: _handleRegisterButtonhuda,
               ),
               const SizedBox(height: 16),
 

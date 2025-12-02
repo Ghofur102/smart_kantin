@@ -11,54 +11,72 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  late List<CartItem> cartItems;
+  late List<CartItem> _listCartItemshuda;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    cartItems = ModalRoute.of(context)!.settings.arguments as List<CartItem>;
+    _listCartItemshuda =
+        ModalRoute.of(context)!.settings.arguments as List<CartItem>;
   }
 
-  void _updateQuantity(int index, double qty) {
+  void _updateQuantityItemhuda(int index, double qty) {
     if (qty <= 0) {
       setState(() {
-        cartItems.removeAt(index);
+        _listCartItemshuda.removeAt(index);
       });
     } else {
       setState(() {
-        cartItems[index].quantity = qty;
+        _listCartItemshuda[index].quantity = qty;
       });
     }
   }
 
-  int get _totalItems {
-    return cartItems.fold(0, (sum, item) => sum + item.quantity.toInt());
+  int get _getTotalItemshuda {
+    return _listCartItemshuda.fold(
+      0,
+      (sum, item) => sum + item.quantity.toInt(),
+    );
   }
 
-  int get _totalPrice {
-    return cartItems.fold(
+  int get _getTotalPricehuda {
+    return _listCartItemshuda.fold(
       0,
       (sum, item) => sum + (item.product.price * item.quantity).toInt(),
+    );
+  }
+
+  void _handlePaymentButtonhuda() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Proses pembayaran...'),
+        duration: Duration(seconds: 2),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Keranjang Saya'),
-        centerTitle: true,
-      ),
-      body: cartItems.isEmpty
+      appBar: AppBar(title: const Text('Keranjang Saya'), centerTitle: true),
+      body: _listCartItemshuda.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.shopping_cart_outlined,
-                      size: 60, color: Colors.grey[300]),
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 60,
+                    color: Colors.grey[300],
+                  ),
                   const SizedBox(height: 16),
-                  Text('Keranjang Kosong',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+                  Text(
+                    'Keranjang Kosong',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: const Color.fromARGB(255, 0, 0, 0),
+                    ),
+                  ),
                 ],
               ),
             )
@@ -67,9 +85,9 @@ class _CartScreenState extends State<CartScreen> {
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(12),
-                    itemCount: cartItems.length,
+                    itemCount: _listCartItemshuda.length,
                     itemBuilder: (context, index) {
-                      final item = cartItems[index];
+                      final item = _listCartItemshuda[index];
 
                       return Card(
                         margin: const EdgeInsets.only(bottom: 8),
@@ -81,10 +99,13 @@ class _CartScreenState extends State<CartScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(item.product.name,
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold)),
+                                    Text(
+                                      item.product.name,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     const SizedBox(height: 6),
                                     Text(
                                       'Rp ${item.product.price}',
@@ -100,18 +121,24 @@ class _CartScreenState extends State<CartScreen> {
                               Row(
                                 children: [
                                   GestureDetector(
-                                    onTap: () =>
-                                        _updateQuantity(index, item.quantity - 1),
+                                    onTap: () => _updateQuantityItemhuda(
+                                      index,
+                                      item.quantity - 1,
+                                    ),
                                     child: Container(
                                       width: 28,
                                       height: 28,
                                       decoration: BoxDecoration(
                                         border: Border.all(
-                                            color: AppColors.primary),
+                                          color: AppColors.primary,
+                                        ),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
-                                      child: const Icon(Icons.remove,
-                                          size: 16, color: AppColors.primary),
+                                      child: const Icon(
+                                        Icons.remove,
+                                        size: 16,
+                                        color: AppColors.primary,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(
@@ -127,8 +154,10 @@ class _CartScreenState extends State<CartScreen> {
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: () =>
-                                        _updateQuantity(index, item.quantity + 1),
+                                    onTap: () => _updateQuantityItemhuda(
+                                      index,
+                                      item.quantity + 1,
+                                    ),
                                     child: Container(
                                       width: 28,
                                       height: 28,
@@ -136,8 +165,11 @@ class _CartScreenState extends State<CartScreen> {
                                         color: AppColors.primary,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
-                                      child: const Icon(Icons.add,
-                                          size: 16, color: Colors.white),
+                                      child: const Icon(
+                                        Icons.add,
+                                        size: 16,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -152,20 +184,24 @@ class _CartScreenState extends State<CartScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    border:
-                        Border(top: BorderSide(color: Colors.grey[300]!)),
+                    border: Border(top: BorderSide(color: Colors.grey[300]!)),
                   ),
                   child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total Item:',
-                              style: TextStyle(fontSize: 14)),
-                          Text('$_totalItems',
-                              style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold)),
+                          const Text(
+                            'Total Item:',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          Text(
+                            '$_getTotalItemshuda',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -175,10 +211,12 @@ class _CartScreenState extends State<CartScreen> {
                           const Text(
                             'Total Harga:',
                             style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
-                            'Rp $_totalPrice',
+                            'Rp $_getTotalPricehuda',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -190,14 +228,7 @@ class _CartScreenState extends State<CartScreen> {
                       const SizedBox(height: 12),
                       CustomButton(
                         label: 'Pembayaran',
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Proses pembayaran...'),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        },
+                        onPressed: _handlePaymentButtonhuda,
                       ),
                     ],
                   ),

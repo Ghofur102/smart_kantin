@@ -10,24 +10,23 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _isLoading = false;
+  final _tfEmailControllerhuda = TextEditingController();
+  final _tfPasswordControllerhuda = TextEditingController();
+  bool _isLoadingButtonhuda = false;
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _tfEmailControllerhuda.dispose();
+    _tfPasswordControllerhuda.dispose();
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleLoginButtonhuda() async {
     setState(() {
-      _isLoading = true;
+      _isLoadingButtonhuda = true;
     });
 
     try {
-      // TODO: Implementasi logic login dengan Firebase Authentication
       await Future.delayed(const Duration(seconds: 2));
 
       if (!mounted) return;
@@ -48,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } finally {
       if (mounted) {
         setState(() {
-          _isLoading = false;
+          _isLoadingButtonhuda = false;
         });
       }
     }
@@ -104,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
               CustomTextField(
                 label: 'Email',
                 hint: 'Masukkan email Anda',
-                controller: _emailController,
+                controller: _tfEmailControllerhuda,
                 keyboardType: TextInputType.emailAddress,
               ),
 
@@ -112,15 +111,15 @@ class _LoginScreenState extends State<LoginScreen> {
               CustomTextField(
                 label: 'Password',
                 hint: 'Masukkan password Anda',
-                controller: _passwordController,
+                controller: _tfPasswordControllerhuda,
                 obscureText: true,
               ),
 
               // Login Button
               CustomButton(
                 label: 'Masuk',
-                isLoading: _isLoading,
-                onPressed: _handleLogin,
+                isLoading: _isLoadingButtonhuda,
+                onPressed: _handleLoginButtonhuda,
               ),
               const SizedBox(height: 16),
 

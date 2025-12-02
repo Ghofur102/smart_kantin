@@ -11,31 +11,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final CollectionReference _products =
-      FirebaseFirestore.instance.collection('products');
+  final CollectionReference _collectionProductshuda = FirebaseFirestore.instance
+      .collection('products');
 
-  List<CartItem> _cartItems = [];
-  String _selectedCategory = 'semua';
+  final List<CartItem> _listCartItemshuda = [];
+  String _strSelectedCategoryhuda = 'semua';
 
-  void _addToCart(ProductsModel product) {
+  void _handleAddToCartButtonhuda(ProductsModel product) {
     setState(() {
-      final index = _cartItems.indexWhere(
+      final index = _listCartItemshuda.indexWhere(
         (item) => item.product.productId == product.productId,
       );
 
       if (index == -1) {
-        _cartItems.add(
-          CartItem(product: product, quantity: 1),
-        );
+        _listCartItemshuda.add(CartItem(product: product, quantity: 1));
       } else {
-        _cartItems[index].quantity++;
+        _listCartItemshuda[index].quantity++;
       }
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${product.name} ditambahkan ke keranjang'),
-      ),
+      SnackBar(content: Text('${product.name} ditambahkan ke keranjang')),
     );
   }
 
@@ -54,11 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.pushNamed(
                     context,
                     '/cart',
-                    arguments: _cartItems,
+                    arguments: _listCartItemshuda,
                   );
                 },
               ),
-              if (_cartItems.isNotEmpty)
+              if (_listCartItemshuda.isNotEmpty)
                 Positioned(
                   right: 8,
                   top: 8,
@@ -73,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       minHeight: 18,
                     ),
                     child: Text(
-                      _cartItems.length.toString(),
+                      _listCartItemshuda.length.toString(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -101,15 +97,15 @@ class _HomeScreenState extends State<HomeScreen> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-                _buildCategoryChip('semua', 'Semua'),
-                _buildCategoryChip('makanan', 'Makanan'),
-                _buildCategoryChip('minuman', 'Minuman'),
+                _buildCategoryChiphuda('semua', 'Semua'),
+                _buildCategoryChiphuda('makanan', 'Makanan'),
+                _buildCategoryChiphuda('minuman', 'Minuman'),
               ],
             ),
           ),
           Expanded(
             child: StreamBuilder(
-              stream: _products.snapshots(),
+              stream: _collectionProductshuda.snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
@@ -121,13 +117,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 List<DocumentSnapshot> docs = snapshot.data!.docs;
 
-                if (_selectedCategory != 'semua') {
+                if (_strSelectedCategoryhuda != 'semua') {
                   docs = docs
                       .where(
                         (doc) => doc['category']
                             .toString()
                             .toLowerCase()
-                            .contains(_selectedCategory),
+                            .contains(_strSelectedCategoryhuda),
                       )
                       .toList();
                 }
@@ -144,11 +140,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final DocumentSnapshot document = docs[index];
                     final product = ProductsModel.fromSnapshot(
-                        document as DocumentSnapshot<Map<String, dynamic>>);
+                      document as DocumentSnapshot<Map<String, dynamic>>,
+                    );
 
                     return ProductCard(
                       product: product,
-                      onAddToCart: () => _addToCart(product),
+                      onAddToCart: () => _handleAddToCartButtonhuda(product),
                     );
                   },
                 );
@@ -160,8 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCategoryChip(String value, String label) {
-    final isSelected = _selectedCategory == value;
+  Widget _buildCategoryChiphuda(String value, String label) {
+    final isSelected = _strSelectedCategoryhuda == value;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: FilterChip(
@@ -169,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
         selected: isSelected,
         onSelected: (selected) {
           setState(() {
-            _selectedCategory = value;
+            _strSelectedCategoryhuda = value;
           });
         },
         backgroundColor: Colors.transparent,

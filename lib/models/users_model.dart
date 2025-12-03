@@ -4,13 +4,13 @@ class UsersModel {
   final String userId;
   final String email;
   final String fullName;
-  final String? nim;
+  final String password;
 
   UsersModel({
     required this.userId,
     required this.email,
     required this.fullName,
-    this.nim,
+    required this.password,
   });
 
   // konversi dari object dart ke map untuk dikirim ke firebase
@@ -19,7 +19,7 @@ class UsersModel {
       'userId': userId,
       'email': email,
       'fullName': fullName,
-      if (nim != null) 'nim': nim,
+      'password': password,
     };
   }
 
@@ -31,7 +31,7 @@ class UsersModel {
       userId: data_ghofur['userId'] ?? doc.id,
       email: data_ghofur['email'] ?? '',
       fullName: data_ghofur['fullName'] ?? '',
-      nim: data_ghofur['nim'] ?? null,
+      password: data_ghofur['password'] ?? '',
     );
   }
 }

@@ -20,4 +20,20 @@ class ProductService {
       }
     }
 
+    Future<void> updateProduct_ghofur({
+      required String productId,
+      required String name,
+      required int price,
+      required int stock,
+      required String imageUrl,
+      required Category category,
+    }) async {
+      try {
+        final product_ghofur = ProductsModel(productId: productId, name: name, price: price, stock: stock, imageUrl: imageUrl, category: category);
+        await _firestore_ghofur.collection('products').doc(productId).update(product_ghofur.toMap_ghofur());
+      } catch (e) {
+        throw Exception(e.toString());
+      }
+    }
+
 }

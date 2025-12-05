@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'package:smart_kantin/firebase_options.dart';
 import 'package:smart_kantin/models/products_model.dart';
 import 'package:smart_kantin/services/auth_service.dart';
+import 'package:smart_kantin/providers/cart_provider.dart';
 import 'package:smart_kantin/screens/login_screen.dart';
 import 'package:smart_kantin/screens/register_screen.dart';
 import 'package:smart_kantin/screens/home_screen.dart';
@@ -40,18 +42,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Smart Kantin',
-      theme: AppTheme.lightTheme(),
-      home: initialUid == null ? const LoginScreen() : const HomeScreen(),
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Smart Kantin',
+        theme: AppTheme.lightTheme(),
+        home: initialUid == null ? const LoginScreen() : const HomeScreen(),
+        routes: {
+          '/login': (context) => const LoginScreen(),
+          '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
         '/cart': (context) => const CartScreen(),
         '/profile': (context) => const ProfileScreen(),
       },
+      ),
     );
   }
 }

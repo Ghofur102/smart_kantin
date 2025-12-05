@@ -36,4 +36,14 @@ class ProductService {
       }
     }
 
+    Future<void> deleteProduct_ghofur({
+      required String productId,
+    }) async {
+      try {
+        await _firestore_ghofur.collection('products').doc(productId).delete();
+      } catch (e) {
+        throw Exception(e.toString());
+      }
+    } 
+
 }

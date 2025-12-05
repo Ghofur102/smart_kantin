@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import 'package:smart_kantin/services/auth_service.dart';
 import '../models/products_model.dart';
+import '../providers/cart_provider.dart';
 import '../widgets/product_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,23 +17,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final CollectionReference _products =
       FirebaseFirestore.instance.collection('products');
 
-  final List<CartItem> _cartItems = [];
   String _selectedCategory = 'semua';
 
   void _addToCart(ProductsModel product) {
-    setState(() {
-      final index = _cartItems.indexWhere(
-        (item) => item.product.productId == product.productId,
-      );
-
-      if (index == -1) {
-        _cartItems.add(
-          CartItem(product: product, quantity: 1),
-        );
-      } else {
-        _cartItems[index].quantity++;
-      }
-    });
+    final cartProvider = context.read<CartProvider>();
+    cartProvider.addToCart(product, quantity: 1);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -52,38 +42,43 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
+                  final cartProvider = context.read<CartProvider>();
                   Navigator.pushNamed(
                     context,
                     '/cart',
-                    arguments: _cartItems,
+                    arguments: cartProvider.cartItems,
                   );
                 },
               ),
-              if (_cartItems.isNotEmpty)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 18,
-                      minHeight: 18,
-                    ),
-                    child: Text(
-                      _cartItems.length.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+              Consumer<CartProvider>(
+                builder: (context, cartProvider, child) {
+                  if (cartProvider.isEmpty) return const SizedBox.shrink();
+                  return Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      textAlign: TextAlign.center,
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Text(
+                        cartProvider.itemCount.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
+              ),
             ],
           ),
           IconButton(

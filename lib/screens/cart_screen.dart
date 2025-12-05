@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/products_model.dart';
 import '../services/auth_service.dart';
+import '../services/transactions_service.dart';
 import '../themes/app_colors.dart';
 import '../widgets/custom_button.dart';
 
@@ -95,7 +96,7 @@ class _CartScreenState extends State<CartScreen> {
 
     try {
       // Pastikan stok cukup dan jalankan transaksi pengurangan stok
-      await checkoutAndReduceStock_zami(cartItems);
+      await TransactionsService.checkoutAndReduceStock_zami(cartItems);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

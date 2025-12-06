@@ -57,7 +57,8 @@ class _CartScreenState extends State<CartScreen> {
       0,
       (sum, item) => sum + (item.product.price * item.quantity).toInt(),
     );
-  // removed unused _totalPrice getter; subtotal is calculated with `val_subtotal_zami`
+  }
+  // removed unused _totalPrice getter; subtotal is calculated with val_subtotal_zami
 
   Future<void> _loadUserNimAndRecalc_zami() async {
     final uid = await AuthService.instance.getLoggedInUserId();
@@ -288,7 +289,7 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           const Text('Total Item:', style: TextStyle(fontSize: 14)),
-                          Text('$_totalItems', key: const Key('txtTotalItem_zami'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                          Text('Rp ${val_subtotal_zami.toStringAsFixed(2)}', key: const Key('txtTotalItem_zami'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -340,8 +341,6 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                       const SizedBox(height: 12),
                       CustomButton(
-                        label: 'Pembayaran',
-                        onPressed: _handlePaymentButtonhuda,
                         key: const Key('btnPembayaran_zami'),
                         label: _isLoading_zami ? 'Memproses...' : 'Pembayaran',
                         isLoading: _isLoading_zami,

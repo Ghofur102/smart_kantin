@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 enum Category { makanan, minuman }
 
@@ -20,7 +21,7 @@ class ProductsModel {
   });
 
   // konversi dari object dart ke map untuk dikirim ke firebase
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap_ghofur() {
     return {
       'name': name,
       'price': price,
@@ -34,34 +35,35 @@ class ProductsModel {
   factory ProductsModel.fromSnapshot(
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
-    final data = doc.data()!;
+    final data_ghofur = doc.data()!;
 
     return ProductsModel(
       productId: doc.id,
-      name: data['name'] ?? '',
-      price: data['price'] ?? 0,
-      stock: data['stock'] ?? 0,
-      imageUrl: data['imageUrl'] ?? '',
+      name: data_ghofur['name'] ?? '',
+      price: data_ghofur['price'] ?? 0,
+      stock: data_ghofur['stock'] ?? 0,
+      imageUrl: data_ghofur['imageUrl'] ?? '',
       category: Category.values.firstWhere(
-        (e) => e.name == data['category'],
+        (e) => e.name == data_ghofur['category'],
         orElse: () => Category.makanan,
       ),
     );
   }
 
-  static Future<void> seederProducts() async {
-    print("🔥🔥🔥 [START] MEMULAI FUNGSI SEEDER 🔥🔥🔥");
-    final CollectionReference products = FirebaseFirestore.instance.collection(
+  static Future<void> seederProducts_ghofur() async {
+    // Use debugPrint instead of print for better control in production/dev
+    debugPrint("🔥🔥🔥 [START] MEMULAI FUNGSI SEEDER 🔥🔥🔥");
+    final CollectionReference products_ghofur = FirebaseFirestore.instance.collection(
       'products',
     );
 
-    final snapshot = await products.limit(1).get();
+    final snapshot_ghofur = await products_ghofur.limit(1).get();
 
-    if (snapshot.docs.isNotEmpty) {
+    if (snapshot_ghofur.docs.isNotEmpty) {
       return;
     }
 
-    List<ProductsModel> dummyProducts = [
+    List<ProductsModel> dummyProducts_ghofur = [
       ProductsModel(
         productId: "",
         name: "mie ayam",
@@ -143,11 +145,11 @@ class ProductsModel {
         category: Category.makanan,
       ),
     ];
-    for (var product in dummyProducts) {
-      await products.add(
-        product.toMap(),
+    for (var product_ghofur in dummyProducts_ghofur) {
+      await products_ghofur.add(
+        product_ghofur.toMap_ghofur(),
       ); // firebase hanya mengerti data map makanya dikonversi pakai toMap()
-      print("✅ Berhasil terkirim!");
+      debugPrint("✅ Berhasil terkirim: ${product_ghofur.name}");
     }
   }
 }

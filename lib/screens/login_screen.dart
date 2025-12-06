@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import 'package:smart_kantin/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,27 +23,48 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLoginButtonhuda() async {
+  Future<void> _handleLogin() async {
+    // Validasi
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Email dan password tidak boleh kosong')));
+      return;
+    }
+
+    final emailRegex = RegExp(r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}");
+    if (!emailRegex.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Format email tidak valid')));
+      return;
+    }
+
     setState(() {
       _isLoadingButtonhuda = true;
     });
 
     try {
       await Future.delayed(const Duration(seconds: 2));
+      // lakukan proses login
+      final uid = await AuthService.instance.login(email: email, password: password);
+
+      if (uid == null) {
+        throw Exception('Gagal login, periksa kredensial Anda');
+      }
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
 
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
+      if (mounted) Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Gagal login: $e')));
+        final err = e.toString();
+        if (err.contains('CONFIGURATION_NOT_FOUND') || err.contains('RecaptchaAction')) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Konfigurasi Firebase Web belum diatur: jalankan `flutterfire configure` atau jalankan di emulator / device Android/iOS')));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal login: $err')));
+        }
       }
     } finally {
       if (mounted) {

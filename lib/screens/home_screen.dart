@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:smart_kantin/services/auth_service.dart';
 import '../models/products_model.dart';
+import '../providers/cart_provider.dart';
 import '../widgets/product_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,6 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
         _listCartItemshuda[index].quantity++;
       }
     });
+  String _selectedCategory = 'semua';
+
+  void _addToCart(ProductsModel product) {
+    final cartProvider = context.read<CartProvider>();
+    cartProvider.addToCart(product, quantity: 1);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${product.name} ditambahkan ke keranjang')),
@@ -47,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
+                  final cartProvider = context.read<CartProvider>();
                   Navigator.pushNamed(
                     context,
                     '/cart',
@@ -74,16 +83,50 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
+                    arguments: cartProvider.cartItems,
+                  );
+                },
+              ),
+              Consumer<CartProvider>(
+                builder: (context, cartProvider, child) {
+                  if (cartProvider.isEmpty) return const SizedBox.shrink();
+                  return Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      textAlign: TextAlign.center,
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Text(
+                        cartProvider.itemCount.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
+              ),
             ],
           ),
           IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () => Navigator.pushNamed(context, '/profile'),
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
+            onPressed: () async {
+              await AuthService.instance.signOut();
+              if (!context.mounted) return;
               Navigator.pushReplacementNamed(context, '/login');
             },
           ),
@@ -170,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         backgroundColor: Colors.transparent,
-        selectedColor: const Color(0xFF2E79DB).withOpacity(0.2),
+        selectedColor: const Color(0x332E79DB),
         side: BorderSide(
           color: isSelected ? const Color(0xFF2E79DB) : Colors.grey,
         ),

@@ -11,17 +11,18 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _isLoading = false;
+  final _tfEmailControllerhuda = TextEditingController();
+  final _tfPasswordControllerhuda = TextEditingController();
+  bool _isLoadingButtonhuda = false;
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _tfEmailControllerhuda.dispose();
+    _tfPasswordControllerhuda.dispose();
     super.dispose();
   }
 
+  Future<void> _handleLoginButtonhuda() async {
   Future<void> _handleLogin() async {
     // Validasi
     final email = _emailController.text.trim();
@@ -39,10 +40,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     setState(() {
-      _isLoading = true;
+      _isLoadingButtonhuda = true;
     });
 
     try {
+      await Future.delayed(const Duration(seconds: 2));
       // lakukan proses login
       final uid = await AuthService.instance.login(email: email, password: password);
 
@@ -67,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } finally {
       if (mounted) {
         setState(() {
-          _isLoading = false;
+          _isLoadingButtonhuda = false;
         });
       }
     }
@@ -123,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
               CustomTextField(
                 label: 'Email',
                 hint: 'Masukkan email Anda',
-                controller: _emailController,
+                controller: _tfEmailControllerhuda,
                 keyboardType: TextInputType.emailAddress,
               ),
 
@@ -131,15 +133,15 @@ class _LoginScreenState extends State<LoginScreen> {
               CustomTextField(
                 label: 'Password',
                 hint: 'Masukkan password Anda',
-                controller: _passwordController,
+                controller: _tfPasswordControllerhuda,
                 obscureText: true,
               ),
 
               // Login Button
               CustomButton(
                 label: 'Masuk',
-                isLoading: _isLoading,
-                onPressed: _handleLogin,
+                isLoading: _isLoadingButtonhuda,
+                onPressed: _handleLoginButtonhuda,
               ),
               const SizedBox(height: 16),
 
@@ -153,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushNamed(context, '/register');
                     },
                     child: const Text(
-                      'Daftar di sini',
+                      'Register',
                       style: TextStyle(
                         color: Color(0xFF2E79DB),
                         fontWeight: FontWeight.bold,

@@ -28,20 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _tfEmailControllerhuda.dispose();
     _tfPasswordControllerhuda.dispose();
     _tfConfirmPasswordControllerhuda.dispose();
-  final _fullNameController = TextEditingController();
-  final _nimController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _isLoading = false;
 
-  @override
-  void dispose() {
-    _fullNameController.dispose();
-    _nimController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -52,13 +39,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       // Basic validation
-      final nim = _nimController.text.trim();
-      final fullName = _fullNameController.text.trim();
-      final email = _emailController.text.trim();
-      final password = _passwordController.text;
-      final confirmPassword = _confirmPasswordController.text;
+      final nim = _tfNimControllerhuda.text.trim();
+      final fullName = _tfFullNameControllerhuda.text.trim();
+      final email = _tfEmailControllerhuda.text.trim();
+      final password = _tfPasswordControllerhuda.text;
+      final confirmPassword = _tfConfirmPasswordControllerhuda.text;
 
-      if (nim.isEmpty || fullName.isEmpty || email.isEmpty || password.isEmpty) {
+      if (nim.isEmpty ||
+          fullName.isEmpty ||
+          email.isEmpty ||
+          password.isEmpty) {
         throw Exception('Semua field wajib diisi.');
       }
       if (password != confirmPassword) {
@@ -77,30 +67,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pendaftaran berhasil!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Pendaftaran berhasil!')));
 
       if (mounted) {
         Navigator.pop(context);
       }
     } catch (ehuda) {
+      String message = 'Gagal mendaftar: ';
+      if (ehuda is FirebaseAuthException) {
+        message += ehuda.message ?? ehuda.code;
+      } else {
+        message += ehuda.toString();
+      }
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Gagal mendaftar: $ehuda')));
-      if (mounted) Navigator.pop(context);
-    } catch (e) {
-      String message = 'Gagal mendaftar: ';
-      if (e is FirebaseAuthException) {
-        message += e.message ?? e.code;
-      } else {
-        message += e.toString();
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     } finally {
       if (mounted) {
@@ -141,7 +125,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 label: 'UserID (NIM)',
                 hint: 'Masukkan NIM ',
                 controller: _tfNimControllerhuda,
-                controller: _nimController,
               ),
 
               // Full Name

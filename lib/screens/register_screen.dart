@@ -15,6 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _useridController = TextEditingController();
   bool _isLoading = false;
 
   @override
@@ -23,16 +24,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _useridController.dispose();
     super.dispose();
   }
 
   Future<void> _handleRegister() async {
     final fullName = _fullNameController.text.trim();
     final email = _emailController.text.trim();
+    final userid = _useridController.text.trim();
     final password = _passwordController.text.trim();
     final confirm = _confirmPasswordController.text.trim();
 
-    if (fullName.isEmpty || email.isEmpty || password.isEmpty || confirm.isEmpty) {
+    if (fullName.isEmpty || email.isEmpty || userid.isEmpty || password.isEmpty || confirm.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Semua bidang harus diisi')));
       return;
     }
@@ -56,7 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final uid = await AuthService.instance.register(fullName: fullName, email: email, password: password);
+      final uid = await AuthService.instance.register(fullName: fullName, email: email, password: password, userid: userid);
       if (uid == null) throw Exception('Gagal mendaftar');
 
       if (!mounted) return;

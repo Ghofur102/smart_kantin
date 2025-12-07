@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/products_model.dart';
 import '../models/transactions_model.dart';
+import '../providers/cart_provider.dart';
 import '../services/auth_service.dart';
 import '../services/transactions_service.dart';
 import '../themes/app_colors.dart';
@@ -15,8 +17,6 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  late List<CartItem> _listCartItemshuda;
-  late List<CartItem> cartItems;
   double val_subtotal_zami = 0.0;
   double val_discount_zami = 0.0;
   double val_shipping_zami = 5000.0;
@@ -24,56 +24,73 @@ class _CartScreenState extends State<CartScreen> {
   String? _nim_zami;
   bool _isLoading_zami = false;
 
+  // baru: totalItem yang diminta
+  int totalItem = 0;
+
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _listCartItemshuda =
-        ModalRoute.of(context)!.settings.arguments as List<CartItem>;
-    cartItems = ModalRoute.of(context)!.settings.arguments as List<CartItem>;
-    // load user NIM and recalculate totals
+  void initState() {
+    super.initState();
+    // panggil wrapper init yang berakhiran _zami
+    initState_zami();
+  }
+
+  // wrapper init supaya punya akhiran _zami
+  void initState_zami() {
     _loadUserNimAndRecalc_zami();
   }
 
-  void _updateQuantityItemhuda(int index, double qty) {
-    if (qty <= 0) {
-      setState(() {
-        _listCartItemshuda.removeAt(index);
-      });
-    } else {
-      setState(() {
-        _listCartItemshuda[index].quantity = qty;
-      });
+  // semua helper/logic custom harus berakhiran _zami
+  void _updateQuantityItemhuda_zami(int index, double qty) {
+    final cartProvider = context.read<CartProvider>();
+    final cartItems = cartProvider.cartItems;
+
+    if (index < cartItems.length) {
+      final productId = cartItems[index].product.productId;
+
+      if (qty <= 0) {
+        cartProvider.removeFromCart(productId);
+      } else {
+        cartProvider.updateQuantity(productId, qty);
+      }
+      // Recalculate totals after quantity update
+      _recalculate_zami();
     }
   }
 
-  int get _getTotalItemshuda {
-    return _listCartItemshuda.fold(
+  // getter tetap; beri akhiran _zami juga dan gunakan di UI
+  int get _getTotalItemshuda_zami {
+    final cartProvider = context.read<CartProvider>();
+    return cartProvider.cartItems.fold(
       0,
       (sum, item) => sum + item.quantity.toInt(),
     );
   }
 
-  int get _getTotalPricehuda {
-    return _listCartItemshuda.fold(
+  int get _getTotalPricehuda_zami {
+    final cartProvider = context.read<CartProvider>();
+    return cartProvider.cartItems.fold(
       0,
       (sum, item) => sum + (item.product.price * item.quantity).toInt(),
     );
   }
-  // removed unused _totalPrice getter; subtotal is calculated with val_subtotal_zami
 
   Future<void> _loadUserNimAndRecalc_zami() async {
     final uid = await AuthService.instance.getLoggedInUserId();
     if (uid != null) {
-      // NIM disimpan dalam atribut userId, jadi ambil langsung dari uid
+      // jika nim disimpan dalam uid (sesuaikan jika berbeda)
       _nim_zami = uid;
     }
     _recalculate_zami();
   }
 
   void _recalculate_zami() {
-    val_subtotal_zami = cartItems.fold(0.0, (double sum, item) => sum + (item.product.price * item.quantity));
+    final cartProvider = context.read<CartProvider>();
+    val_subtotal_zami = cartProvider.cartItems.fold(
+      0.0,
+      (double sum, item) => sum + (item.product.price * item.quantity),
+    );
 
-    // Default shipping fee (terserah tugas): Rp 5.000
+    // Default shipping fee: Rp 5.000
     val_shipping_zami = 5000.0;
     val_discount_zami = 0.0;
 
@@ -94,6 +111,10 @@ class _CartScreenState extends State<CartScreen> {
     }
 
     val_total_zami = val_subtotal_zami - val_discount_zami + val_shipping_zami;
+
+    // update totalItem agar tersedia sebagai variabel
+    totalItem = _getTotalItemshuda_zami;
+
     if (mounted) setState(() {});
   }
 
@@ -110,21 +131,22 @@ class _CartScreenState extends State<CartScreen> {
       }
 
       // Pastikan stok cukup dan jalankan transaksi pengurangan stok
-      await TransactionsService.checkoutAndReduceStock_zami(cartItems);
+      final cartProvider = context.read<CartProvider>();
+      await TransactionsService.checkoutAndReduceStock_zami(cartProvider.cartItems);
 
-      // Simpan data transaksi ke Firestore
+      // Simpan data transaksi ke Firestore (sesuaikan model/pemetaan jika perlu)
       await TransactionsService.createTransactions_zami(
         userId: userId,
         totalFinal: val_total_zami.toInt(),
-        items: cartItems,
+        items: cartProvider.cartItems,
         status: Status.success,
       );
 
       if (!mounted) return;
-      
+
       // Reset cart setelah pembayaran berhasil
       _resetCart_zami();
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Pembayaran berhasil. Stok diperbarui.')),
       );
@@ -147,18 +169,23 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void _resetCart_zami() {
+    final cartProvider = context.read<CartProvider>();
+
+    // Clear CartProvider untuk update badge di HomeScreen dan cart_screen
+    cartProvider.clearCart();
+
+    // Reset local state
     setState(() {
-      _listCartItemshuda.clear();
-      cartItems.clear();
       val_subtotal_zami = 0.0;
       val_discount_zami = 0.0;
       val_shipping_zami = 5000.0;
       val_total_zami = 0.0;
       _nim_zami = null;
+      totalItem = 0;
     });
   }
 
-  void _handlePaymentButtonhuda() {
+  void _handlePaymentButtonhuda_zami() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Proses pembayaran...'),
@@ -171,215 +198,194 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Keranjang Saya'), centerTitle: true),
-      body: _listCartItemshuda.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.shopping_cart_outlined,
-                    size: 60,
-                    color: Colors.grey[300],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Keranjang Kosong',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: const Color.fromARGB(255, 0, 0, 0),
+      body: Consumer<CartProvider>(
+        builder: (context, cartProvider, child) => cartProvider.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.shopping_cart_outlined,
+                      size: 60,
+                      color: Colors.grey[300],
                     ),
-                  ),
-                ],
-              ),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: _listCartItemshuda.length,
-                    itemBuilder: (context, index) {
-                      final item = _listCartItemshuda[index];
-
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item.product.name,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      'Rp ${item.product.price}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () => _updateQuantityItemhuda(
-                                      index,
-                                      item.quantity - 1,
-                                    ),
-                                    child: Container(
-                                      width: 28,
-                                      height: 28,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: AppColors.primary,
-                                        ),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: const Icon(
-                                        Icons.remove,
-                                        size: 16,
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 32,
-                                    child: Center(
-                                      child: Text(
-                                        '${item.quantity.toInt()}',
+                    const SizedBox(height: 16),
+                    Text(
+                      'Keranjang Kosong',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: const Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: cartProvider.cartItems.length,
+                      itemBuilder: (context, index) {
+                        final item = cartProvider.cartItems[index];
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item.product.name,
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () => _updateQuantityItemhuda(
-                                      index,
-                                      item.quantity + 1,
-                                    ),
-                                    child: Container(
-                                      width: 28,
-                                      height: 28,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primary,
-                                        borderRadius: BorderRadius.circular(4),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        'Rp ${item.product.price}',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                      child: const Icon(
-                                        Icons.add,
-                                        size: 16,
-                                        color: Colors.white,
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () => _updateQuantityItemhuda_zami(
+                                        index,
+                                        item.quantity - 1,
+                                      ),
+                                      child: Container(
+                                        width: 28,
+                                        height: 28,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: AppColors.primary,
+                                          ),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: const Icon(
+                                          Icons.remove,
+                                          size: 16,
+                                          color: AppColors.primary,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(
+                                      width: 32,
+                                      child: Center(
+                                        child: Text(
+                                          '${item.quantity.toInt()}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => _updateQuantityItemhuda_zami(
+                                        index,
+                                        item.quantity + 1,
+                                      ),
+                                      child: Container(
+                                        width: 28,
+                                        height: 28,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: const Icon(
+                                          Icons.add,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border(top: BorderSide(color: Colors.grey[300]!)),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Total Item:',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              '$totalItem',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text('Subtotal:', style: TextStyle(fontSize: 14)),
+                            Text('Rp ${val_subtotal_zami.toStringAsFixed(2)}', key: const Key('txtSubtotal_zami'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                          ],
                         ),
-                      );
-                    },
+                        const SizedBox(height: 6),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Diskon (NIM):', style: TextStyle(fontSize: 14)),
+                            Text('- Rp ${val_discount_zami.toStringAsFixed(2)}', key: const Key('txtDiscount_zami'), style: const TextStyle(fontSize: 14, color: Colors.green)),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Ongkir:', style: TextStyle(fontSize: 14)),
+                            Text('Rp ${val_shipping_zami.toStringAsFixed(2)}', key: const Key('txtShipping_zami'), style: const TextStyle(fontSize: 14)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Total:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text('Rp ${val_total_zami.toStringAsFixed(2)}', key: const Key('txtTotal_zami'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        CustomButton(
+                          key: const Key('btnPembayaran_zami'),
+                          label: _isLoading_zami ? 'Memproses...' : 'Pembayaran',
+                          isLoading: _isLoading_zami,
+                          onPressed: () async {
+                            // Validasi stok dan jalankan transaksi
+                            await _handlePayment_zami();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border(top: BorderSide(color: Colors.grey[300]!)),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Total Item:',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            '$_getTotalItemshuda',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const Text('Total Item:', style: TextStyle(fontSize: 14)),
-                          Text('Rp ${val_subtotal_zami.toStringAsFixed(2)}', key: const Key('txtTotalItem_zami'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Total Harga:',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Rp $_getTotalPricehuda',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                          const Text('Subtotal:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                          Text('Rp ${val_subtotal_zami.toStringAsFixed(2)}', key: const Key('txtSubtotal_zami'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Diskon (NIM):', style: TextStyle(fontSize: 14)),
-                          Text('- Rp ${val_discount_zami.toStringAsFixed(2)}', key: const Key('txtDiscount_zami'), style: const TextStyle(fontSize: 14, color: Colors.green)),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Ongkir:', style: TextStyle(fontSize: 14)),
-                          Text('Rp ${val_shipping_zami.toStringAsFixed(2)}', key: const Key('txtShipping_zami'), style: const TextStyle(fontSize: 14)),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Total:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                          Text('Rp ${val_total_zami.toStringAsFixed(2)}', key: const Key('txtTotal_zami'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary)),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      CustomButton(
-                        key: const Key('btnPembayaran_zami'),
-                        label: _isLoading_zami ? 'Memproses...' : 'Pembayaran',
-                        isLoading: _isLoading_zami,
-                        onPressed: () async {
-                          // Validasi stok dan jalankan transaksi
-                          await _handlePayment_zami();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 }

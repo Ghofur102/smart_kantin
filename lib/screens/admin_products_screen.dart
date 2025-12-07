@@ -13,7 +13,7 @@ class AdminProductsScreen extends StatelessWidget {
         .collection('products');
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kelola Produk - huda'),
+        title: const Text('Kelola Produk '),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),

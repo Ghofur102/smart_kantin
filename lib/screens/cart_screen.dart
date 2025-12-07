@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/products_model.dart';
+import '../models/transactions_model.dart';
 import '../services/auth_service.dart';
 import '../services/transactions_service.dart';
 import '../themes/app_colors.dart';
@@ -63,13 +64,8 @@ class _CartScreenState extends State<CartScreen> {
   Future<void> _loadUserNimAndRecalc_zami() async {
     final uid = await AuthService.instance.getLoggedInUserId();
     if (uid != null) {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      if (doc.exists) {
-        final data = doc.data();
-        if (data != null && data.containsKey('nim')) {
-          _nim_zami = data['nim']?.toString();
-        }
-      }
+      // NIM disimpan dalam atribut userId, jadi ambil langsung dari uid
+      _nim_zami = uid;
     }
     _recalculate_zami();
   }
@@ -107,10 +103,28 @@ class _CartScreenState extends State<CartScreen> {
     });
 
     try {
+      // Dapatkan userId yang sedang login
+      final userId = await AuthService.instance.getLoggedInUserId();
+      if (userId == null) {
+        throw Exception('User tidak teridentifikasi');
+      }
+
       // Pastikan stok cukup dan jalankan transaksi pengurangan stok
       await TransactionsService.checkoutAndReduceStock_zami(cartItems);
 
+      // Simpan data transaksi ke Firestore
+      await TransactionsService.createTransactions_zami(
+        userId: userId,
+        totalFinal: val_total_zami.toInt(),
+        items: cartItems,
+        status: Status.success,
+      );
+
       if (!mounted) return;
+      
+      // Reset cart setelah pembayaran berhasil
+      _resetCart_zami();
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Pembayaran berhasil. Stok diperbarui.')),
       );
@@ -130,6 +144,18 @@ class _CartScreenState extends State<CartScreen> {
         });
       }
     }
+  }
+
+  void _resetCart_zami() {
+    setState(() {
+      _listCartItemshuda.clear();
+      cartItems.clear();
+      val_subtotal_zami = 0.0;
+      val_discount_zami = 0.0;
+      val_shipping_zami = 5000.0;
+      val_total_zami = 0.0;
+      _nim_zami = null;
+    });
   }
 
   void _handlePaymentButtonhuda() {

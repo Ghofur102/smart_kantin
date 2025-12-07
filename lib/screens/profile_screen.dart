@@ -42,29 +42,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text('Profil Saya'),
         centerTitle: true,
         actions: [
-          IconButton(onPressed: _logout, icon: const Icon(Icons.logout))
+          IconButton(onPressed: _logout, icon: const Icon(Icons.logout)),
         ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _user == null
-              ? const Center(child: Text('Pengguna tidak ditemukan'))
-              : Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      Text('Nama: ${_user!.fullName}', style: const TextStyle(fontSize: 18)),
-                      const SizedBox(height: 8),
-                      Text('Email: ${_user!.email}', style: const TextStyle(fontSize: 16)),
-                      const SizedBox(height: 8),
-                      if (_user!.userId != null) Text('NIM: ${_user!.userId}', style: const TextStyle(fontSize: 16)),
-                      if (_user!.userId != null) const SizedBox(height: 8),
-                      const Divider(),
-                    ],
+          ? const Center(child: Text('Pengguna tidak ditemukan'))
+          : Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  Text(
+                    'Nama: ${_user!.fullName}',
+                    style: const TextStyle(fontSize: 18),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Email: ${_user!.email}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 8),
+                  if (_user!.userId != null)
+                    Text(
+                      'NIM: ${_user!.userId}',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  if (_user!.userId != null) const SizedBox(height: 8),
+                  const Divider(),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/admin/products');
+                      },
+                      icon: const Icon(Icons.admin_panel_settings, size: 24),
+                      label: const Text('Admin'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }

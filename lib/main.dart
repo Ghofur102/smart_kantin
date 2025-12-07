@@ -10,13 +10,17 @@ import 'package:smart_kantin/screens/register_screen.dart';
 import 'package:smart_kantin/screens/home_screen.dart';
 import 'package:smart_kantin/screens/cart_screen.dart';
 import 'package:smart_kantin/screens/profile_screen.dart';
+import 'package:smart_kantin/screens/admin_products_screen.dart';
+import 'package:smart_kantin/screens/product_form_screen.dart';
 import 'package:smart_kantin/themes/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Inisialisasi koneksi ke Firebase
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   } catch (e) {
     // Provide a clearer message when Firebase isn't configured for the current platform
     // For example, running the app on Flutter web without a web configuration can cause
@@ -43,9 +47,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => CartProvider()),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => CartProvider())],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Smart Kantin',
@@ -54,10 +56,18 @@ class MyApp extends StatelessWidget {
         routes: {
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/cart': (context) => const CartScreen(),
-        '/profile': (context) => const ProfileScreen(),
-      },
+          '/home': (context) => const HomeScreen(),
+          '/cart': (context) => const CartScreen(),
+          '/profile': (context) => const ProfileScreen(),
+          '/admin/products': (context) => const AdminProductsScreen(),
+          '/admin/product_form': (context) {
+            final args = ModalRoute.of(context)?.settings.arguments;
+            if (args is ProductsModel) {
+              return ProductFormScreen(product: args);
+            }
+            return const ProductFormScreen();
+          },
+        },
       ),
     );
   }

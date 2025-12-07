@@ -29,7 +29,7 @@ class ProductCard extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(6),
                 child: Image.asset(
-                  _getImagePath(product.name),
+                  product.imageUrl,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return const Icon(
@@ -109,27 +109,5 @@ class ProductCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  /// Convert product name to asset image path
-  /// E.g. "mie ayam" -> "assets/images/mie ayam.png"
-  String _getImagePath(String productName) {
-    // Mapping nama produk ke nama file gambar
-    final imageMap = {
-      'mie ayam': 'assets/images/mie ayam.png',
-      'mie nyemek': 'assets/images/mie nyemek.png',
-      'mie kuah': 'assets/images/mie kuah.png',
-      'mie goreng': 'assets/images/mie goreng.png',
-      'es teh': 'assets/images/es teh.png',
-      'es jeruk': 'assets/images/es jeruk.png',
-      'es marimas': 'assets/images/es marimas.png',
-      'pop ice': 'assets/images/pop ice.png',
-      'nasi goreng': 'assets/images/nasi goreng.jpg',
-      'ayam goreng': 'assets/images/ayam goreng.png',
-    };
-
-    // Return mapping jika ada, jika tidak ada return default placeholder
-    return imageMap[productName.toLowerCase()] ??
-        'assets/images/nasi goreng.jpg';
   }
 }

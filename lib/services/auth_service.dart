@@ -46,7 +46,7 @@ class AuthService {
     required String fullName,
     required String email,
     required String password,
-    String? nim,
+    String? userid,
   }) async {
     // normalize input: trim and lowercase to avoid mismatches
     final normalizedEmail = email.trim().toLowerCase();
@@ -74,7 +74,7 @@ class AuthService {
       'userId': userId,
       'email': normalizedEmail,
       'fullName': fullName,
-      if (nim != null) 'nim': nim,
+      if (userid != null) 'userid': userid,
       // Menyimpan password plaintext sesuai instruksi tim (PERINGATAN: tidak aman)
       'password': password,
     };

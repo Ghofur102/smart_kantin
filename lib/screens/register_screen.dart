@@ -56,6 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       // Use AuthService to register and save profile
       final uid = await AuthService.instance.register(
+        nim: nim,
         fullName: fullName,
         email: email,
         password: password,

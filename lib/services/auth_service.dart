@@ -42,6 +42,7 @@ class AuthService {
   /// Register manual using Firestore (no FirebaseAuth)
   /// Email must end with @poliwangi.ac.id
   Future<String?> register({
+    required String nim,
     required String fullName,
     required String email,
     required String password,
@@ -57,13 +58,23 @@ class AuthService {
       _firestoreInit = true;
     }
 
+    // check if email already exists
     final existing = await _firestore.collection('users').where('email', isEqualTo: normalizedEmail).limit(1).get();
     if (existing.docs.isNotEmpty) {
       throw Exception('Email sudah terdaftar');
     }
 
-    final docRef = _firestore.collection('users').doc();
-    final userId = docRef.id;
+    // ensure nim (used as userId) is not already taken
+    if (nim.trim().isEmpty) {
+      throw Exception('UserID (NIM) tidak boleh kosong');
+    }
+    final nimDoc = await _firestore.collection('users').doc(nim).get();
+    if (nimDoc.exists) {
+      throw Exception('UserID (NIM) sudah digunakan');
+    }
+
+    final docRef = _firestore.collection('users').doc(nim);
+    final userId = nim;
 
     final userMap = {
       'userId': userId,

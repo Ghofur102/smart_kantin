@@ -16,8 +16,8 @@ void main() async {
   bool firebaseInitialized = false;
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    // initialize auth service listeners
-    AuthService.instance.init();
+    // initialize auth service listeners and wait until ready
+    await AuthService.instance.init();
     firebaseInitialized = true;
   } catch (e) {
     // Provide a clearer message when Firebase isn't configured for the current platform
@@ -47,7 +47,6 @@ void main() async {
       uid = null;
     }
   }
-
   runApp(MyApp(initialUid: uid));
 }
 

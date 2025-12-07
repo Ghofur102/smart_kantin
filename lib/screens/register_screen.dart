@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smart_kantin/services/auth_service.dart';
 
 import '../widgets/custom_text_field.dart';
@@ -57,10 +56,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       // Use AuthService to register and save profile
       final uid = await AuthService.instance.register(
+        nim: nim,
         fullName: fullName,
         email: email,
         password: password,
-        nim: nim,
       );
 
       if (uid == null) throw Exception('Gagal membuat akun.');
@@ -74,17 +73,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (mounted) {
         Navigator.pop(context);
       }
-    } catch (ehuda) {
-      String message = 'Gagal mendaftar: ';
-      if (ehuda is FirebaseAuthException) {
-        message += ehuda.message ?? ehuda.code;
-      } else {
-        message += ehuda.toString();
-      }
+    } catch (e) {
+      final msg = e is Exception ? e.toString() : 'Gagal mendaftar';
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       }
     } finally {
       if (mounted) {

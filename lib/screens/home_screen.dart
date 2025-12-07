@@ -17,22 +17,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final CollectionReference _collectionProductshuda = FirebaseFirestore.instance
       .collection('products');
 
-  final List<CartItem> _listCartItemshuda = [];
   String _strSelectedCategoryhuda = 'semua';
 
   void _handleAddToCartButtonhuda(ProductsModel product) {
-    setState(() {
-      final index = _listCartItemshuda.indexWhere(
-        (item) => item.product.productId == product.productId,
-      );
-
-      if (index == -1) {
-        _listCartItemshuda.add(CartItem(product: product, quantity: 1));
-      } else {
-        _listCartItemshuda[index].quantity++;
-      }
-    });
-
     final cartProvider = context.read<CartProvider>();
     cartProvider.addToCart(product, quantity: 1);
 
@@ -78,11 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/cart',
-                    arguments: _listCartItemshuda,
-                  );
+                  Navigator.pushNamed(context, '/cart');
                 },
               ),
               Consumer<CartProvider>(
